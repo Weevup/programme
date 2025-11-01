@@ -8,6 +8,10 @@ import {
   demoSessions,
   demoVenueRooms,
   demoProgramTemplates,
+  demoProgramme,
+  demoTracks,
+  demoJournees,
+  demoSegments,
 } from './demo-data';
 
 const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
@@ -129,6 +133,78 @@ const demoAPI = {
         data: {
           data: demoProgramTemplates,
           total: demoProgramTemplates.length,
+        },
+      };
+    }
+
+    // Programme endpoints
+    if (url.startsWith('/events/') && url.includes('/programme')) {
+      const eventId = url.split('/')[2];
+      if (demoProgramme.evenementId === eventId) {
+        return { data: demoProgramme };
+      }
+      return { data: null };
+    }
+
+    // Tracks endpoints
+    if (url.startsWith('/programmes/') && url.includes('/tracks')) {
+      const programmeId = url.split('/')[2];
+      const tracks = demoTracks.filter((t) => t.programmeId === programmeId);
+      return {
+        data: {
+          data: tracks,
+          total: tracks.length,
+        },
+      };
+    }
+
+    if (url === '/tracks') {
+      return {
+        data: {
+          data: demoTracks,
+          total: demoTracks.length,
+        },
+      };
+    }
+
+    // Journées endpoints
+    if (url.startsWith('/programmes/') && url.includes('/journees')) {
+      const programmeId = url.split('/')[2];
+      const journees = demoJournees.filter((j) => j.programmeId === programmeId);
+      return {
+        data: {
+          data: journees,
+          total: journees.length,
+        },
+      };
+    }
+
+    if (url === '/journees') {
+      return {
+        data: {
+          data: demoJournees,
+          total: demoJournees.length,
+        },
+      };
+    }
+
+    // Segments endpoints
+    if (url.startsWith('/events/') && url.includes('/segments')) {
+      const eventId = url.split('/')[2];
+      const segments = demoSegments.filter((s) => s.evenementId === eventId);
+      return {
+        data: {
+          data: segments,
+          total: segments.length,
+        },
+      };
+    }
+
+    if (url === '/segments') {
+      return {
+        data: {
+          data: demoSegments,
+          total: demoSegments.length,
         },
       };
     }

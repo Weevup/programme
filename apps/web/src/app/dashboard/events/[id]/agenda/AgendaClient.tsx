@@ -14,7 +14,7 @@ import SessionFormDialog from '@/components/agenda/SessionFormDialog';
 import ConflictsPanel from '@/components/agenda/ConflictsPanel';
 import { detectSessionConflicts } from '@/lib/conflict-detector';
 import { exportToMarkdown, exportToCSV, exportToJSON, downloadFile } from '@/lib/program-export';
-import type { Session } from '@/types/agenda';
+import type { Session, Track } from '@/types/agenda';
 
 export default function AgendaClient() {
   const params = useParams();
@@ -24,6 +24,7 @@ export default function AgendaClient() {
   const [event, setEvent] = useState<any>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [rooms, setRooms] = useState<any[]>([]);
+  const [tracks, setTracks] = useState<Track[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'timeline' | 'list' | 'grid'>('timeline');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date('2024-06-15')); // Default to first day of demo event
@@ -45,6 +46,10 @@ export default function AgendaClient() {
 
       const roomsRes = await api.get('/rooms');
       setRooms(roomsRes.data.data || []);
+
+      // Load tracks
+      const tracksRes = await api.get('/tracks');
+      setTracks(tracksRes.data.data || []);
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -348,6 +353,7 @@ export default function AgendaClient() {
           <TimelineView
             sessions={sessions}
             rooms={rooms}
+            tracks={tracks}
             selectedDate={selectedDate}
             onSessionClick={handleSessionClick}
           />

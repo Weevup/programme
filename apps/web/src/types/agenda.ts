@@ -18,6 +18,125 @@ export type SessionStatus =
   | 'COMPLETED'
   | 'CANCELLED';
 
+export type ProgrammeEtat =
+  | 'draft'
+  | 'a_valider'
+  | 'publie_interne'
+  | 'publie_client'
+  | 'verrouille'
+  | 'archive';
+
+export type InteractionType = 'qa' | 'quiz' | 'sondage' | 'wordcloud';
+
+// ============================================
+// PROGRAMME (Root)
+// ============================================
+
+export interface Programme {
+  id: string;
+  evenementId: string;
+  titre: string;
+  description?: string;
+
+  // Dates
+  dateDebut: Date | string;
+  dateFin: Date | string;
+
+  // État et versioning
+  etat: ProgrammeEtat;
+  version: string;
+  versionPrecedenteId?: string;
+
+  // Langues
+  languesSupportees: string[]; // ['fr', 'en', 'es']
+  langueParDefaut: string;
+
+  // Tags & catégorisation
+  tags: string[];
+
+  // Publications
+  publications: {
+    portail_web: boolean;
+    portail_mobile: boolean;
+    integration_calendrier: boolean;
+    export_pdf: boolean;
+  };
+
+  // Métadonnées
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  createdBy?: string;
+  lastModifiedBy?: string;
+}
+
+// ============================================
+// JOURNÉE (Day Structure)
+// ============================================
+
+export interface Journee {
+  id: string;
+  programmeId: string;
+  date: Date | string;
+  titre: string;
+  description?: string;
+  ordre: number;
+
+  // Horaires d'ouverture
+  heuresOuverture: string; // "08:00"
+  heuresFermeture: string; // "19:00"
+
+  // Configuration
+  estActif: boolean;
+  couleurTheme?: string; // HEX color
+
+  // Métadonnées
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+}
+
+// ============================================
+// TRACK (Parcours thématique)
+// ============================================
+
+export interface Track {
+  id: string;
+  programmeId: string;
+  nom: string;
+  description?: string;
+  couleur: string; // HEX color (e.g., "#3B82F6")
+  ordre: number;
+
+  // Segments & visibilité
+  segmentsVisibles?: string[]; // IDs of segments who can see this track
+
+  // Icon (optional)
+  icon?: string;
+
+  // Métadonnées
+  estActif: boolean;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+}
+
+// ============================================
+// SEGMENT / AUDIENCE
+// ============================================
+
+export interface Segment {
+  id: string;
+  evenementId: string;
+  nom: string;
+  description?: string;
+  couleur?: string;
+
+  // Type de segment
+  type: 'role' | 'zone_geo' | 'langue' | 'custom';
+
+  // Métadonnées
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+}
+
 export interface Speaker {
   id: string;
   name: string;
@@ -62,6 +181,10 @@ export interface VenueRoom {
 export interface Session {
   id: string;
   eventId: string;
+  programmeId?: string;
+  journeeId?: string; // Reference to Journee
+  trackId?: string; // Reference to Track
+
   title: string;
   description?: string;
   type: SessionType;
@@ -77,13 +200,16 @@ export interface Session {
 
   // Capacity
   maxCapacity?: number;
+  currentRegistrations?: number;
 
   // Speakers
   speakers: Speaker[];
 
   // Visibility & access
   isPublic: boolean;
-  segments?: string[];
+  segments?: string[]; // Deprecated in favor of segmentsAutorises
+  segmentsAutorises?: string[]; // Segment IDs who can access
+  segmentsExclus?: string[]; // Segment IDs who are excluded
 
   // Content
   language?: string;
@@ -92,12 +218,38 @@ export interface Session {
   // Status
   status?: SessionStatus;
 
+  // Logistique
+  logistique?: {
+    ressources?: string[]; // ["20 chaises", "1 micro", "2 écrans"]
+    tempsMontage?: number; // minutes before session for setup
+    tempsDemonte?: number; // minutes after session for teardown
+    instructions?: string;
+  };
+
+  // Interactions (features enabled for this session)
+  interactions?: {
+    qaActive?: boolean;
+    quizActive?: boolean;
+    sondageActive?: boolean;
+    wordcloudActive?: boolean;
+  };
+
+  // Prérequis & règles
+  prerequis?: string[]; // Session IDs that must be attended first
+  accesPremium?: boolean; // VIP only
+  inscriptionRequise?: boolean; // Registration required
+
   // Stats
   _count?: {
     checkIns?: number;
     feedbacks?: number;
     interactions?: number;
+    questions?: number; // Q&A questions
   };
+
+  // Extended for UI
+  track?: Track;
+  journee?: Journee;
 
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -153,15 +305,101 @@ export interface DropTarget {
 // ============================================
 
 export interface ConflictType {
-  type: 'room' | 'speaker' | 'time';
-  severity: 'error' | 'warning';
+  type: 'room' | 'speaker' | 'time' | 'capacity' | 'setup' | 'curfew' | 'custom';
+  severity: 'error' | 'warning' | 'info';
   message: string;
   sessions: string[]; // Session IDs
+  autoResolvable?: boolean;
+  suggestions?: string[];
 }
 
 export interface SessionConflict {
   sessionId: string;
   conflicts: ConflictType[];
+}
+
+// ============================================
+// CONTRAINTES (Configurable rules)
+// ============================================
+
+export interface Contrainte {
+  id: string;
+  programmeId: string;
+  nom: string;
+  description?: string;
+  type: 'temps_pause' | 'capacite_max' | 'heure_limite' | 'montage_demontage' | 'custom';
+
+  // Règle
+  regle: {
+    condition: string; // e.g., "IF session.type === 'WORKSHOP'"
+    validation: string; // e.g., "THEN session.duration >= 60"
+    message: string; // Error message if violated
+  };
+
+  severite: 'error' | 'warning' | 'info';
+  estActif: boolean;
+
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+}
+
+// ============================================
+// VERSIONING & PUBLICATION
+// ============================================
+
+export interface ProgrammeVersion {
+  id: string;
+  programmeId: string;
+  version: string; // "1.0.0", "1.1.0", etc.
+
+  // Snapshot of data at this version
+  snapshot: {
+    sessions: Session[];
+    tracks: Track[];
+    journees: Journee[];
+  };
+
+  // Changes from previous version
+  changelog?: string;
+
+  // État
+  etat: ProgrammeEtat;
+  datePublication?: Date | string;
+
+  // Metadata
+  createdBy: string;
+  createdAt: Date | string;
+}
+
+export interface Publication {
+  id: string;
+  programmeId: string;
+  versionId: string;
+
+  // Publication channels
+  canaux: {
+    portail_web: boolean;
+    portail_mobile: boolean;
+    integration_calendrier: boolean;
+    export_pdf: boolean;
+  };
+
+  // Segments
+  segmentsCibles?: string[]; // null = tous les segments
+
+  // Dates
+  dateDebutPublication?: Date | string;
+  dateFinPublication?: Date | string;
+
+  // Notification
+  notifierParticipants?: boolean;
+  messageNotification?: string;
+
+  // Status
+  statut: 'scheduled' | 'active' | 'expired';
+
+  createdAt: Date | string;
+  updatedAt?: Date | string;
 }
 
 // ============================================

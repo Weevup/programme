@@ -1,4 +1,4 @@
-import type { Session, VenueRoom, Speaker } from '@/types/agenda';
+import type { Session, VenueRoom, Speaker, Track, Journee, Programme, Segment } from '@/types/agenda';
 
 // ============================================
 // VENUE ROOMS - Salles détaillées
@@ -142,6 +142,183 @@ export const demoVenueRooms: VenueRoom[] = [
 ];
 
 // ============================================
+// PROGRAMME - Programme principal
+// ============================================
+
+export const demoProgramme: Programme = {
+  id: 'programme-1',
+  evenementId: 'event-1',
+  titre: 'Programme Séminaire Tech 2024',
+  description: 'Programme complet du séminaire technologique sur 2 jours',
+  dateDebut: new Date('2024-06-15T08:00:00'),
+  dateFin: new Date('2024-06-16T18:00:00'),
+  etat: 'publie_client',
+  version: '2.1.0',
+  languesSupportees: ['fr', 'en'],
+  langueParDefaut: 'fr',
+  tags: ['tech', 'innovation', 'IA', 'cloud'],
+  publications: {
+    portail_web: true,
+    portail_mobile: true,
+    integration_calendrier: true,
+    export_pdf: true,
+  },
+  createdAt: new Date('2024-05-01T10:00:00'),
+  updatedAt: new Date('2024-06-10T15:30:00'),
+  createdBy: 'admin@techseminaire.com',
+  lastModifiedBy: 'organizer@techseminaire.com',
+};
+
+// ============================================
+// JOURNÉES - Structure des jours
+// ============================================
+
+export const demoJournees: Journee[] = [
+  {
+    id: 'journee-1',
+    programmeId: 'programme-1',
+    date: new Date('2024-06-15'),
+    titre: 'Jour 1 - Tendances & Innovation',
+    description: 'Première journée axée sur les tendances technologiques et l\'innovation',
+    ordre: 1,
+    heuresOuverture: '08:30',
+    heuresFermeture: '20:00',
+    estActif: true,
+    couleurTheme: '#3B82F6', // Blue
+    createdAt: new Date('2024-05-01'),
+    updatedAt: new Date('2024-06-01'),
+  },
+  {
+    id: 'journee-2',
+    programmeId: 'programme-1',
+    date: new Date('2024-06-16'),
+    titre: 'Jour 2 - Pratique & Durabilité',
+    description: 'Deuxième journée avec ateliers pratiques et focus sur la durabilité',
+    ordre: 2,
+    heuresOuverture: '08:30',
+    heuresFermeture: '15:30',
+    estActif: true,
+    couleurTheme: '#10B981', // Green
+    createdAt: new Date('2024-05-01'),
+    updatedAt: new Date('2024-06-01'),
+  },
+];
+
+// ============================================
+// TRACKS - Parcours thématiques
+// ============================================
+
+export const demoTracks: Track[] = [
+  {
+    id: 'track-1',
+    programmeId: 'programme-1',
+    nom: 'Intelligence Artificielle',
+    description: 'Parcours dédié à l\'IA, machine learning et IA générative',
+    couleur: '#8B5CF6', // Purple
+    ordre: 1,
+    icon: '🤖',
+    estActif: true,
+    createdAt: new Date('2024-05-01'),
+    updatedAt: new Date('2024-05-15'),
+  },
+  {
+    id: 'track-2',
+    programmeId: 'programme-1',
+    nom: 'Infrastructure & Cloud',
+    description: 'Parcours technique sur le cloud, DevOps et cybersécurité',
+    couleur: '#3B82F6', // Blue
+    ordre: 2,
+    icon: '☁️',
+    estActif: true,
+    createdAt: new Date('2024-05-01'),
+    updatedAt: new Date('2024-05-15'),
+  },
+  {
+    id: 'track-3',
+    programmeId: 'programme-1',
+    nom: 'Innovation & Business',
+    description: 'Parcours orienté innovation, transformation et RH',
+    couleur: '#10B981', // Green
+    ordre: 3,
+    icon: '💡',
+    estActif: true,
+    createdAt: new Date('2024-05-01'),
+    updatedAt: new Date('2024-05-15'),
+  },
+  {
+    id: 'track-4',
+    programmeId: 'programme-1',
+    nom: 'Web3 & Emerging Tech',
+    description: 'Technologies émergentes: blockchain, Web3, métaverse',
+    couleur: '#F59E0B', // Amber
+    ordre: 4,
+    icon: '🚀',
+    estActif: true,
+    createdAt: new Date('2024-05-01'),
+    updatedAt: new Date('2024-05-15'),
+  },
+  {
+    id: 'track-5',
+    programmeId: 'programme-1',
+    nom: 'Data & Analytics',
+    description: 'Parcours data science, analytics et visualisation',
+    couleur: '#EC4899', // Pink
+    ordre: 5,
+    icon: '📊',
+    estActif: true,
+    createdAt: new Date('2024-05-01'),
+    updatedAt: new Date('2024-05-15'),
+  },
+];
+
+// ============================================
+// SEGMENTS - Audiences et accès
+// ============================================
+
+export const demoSegments: Segment[] = [
+  {
+    id: 'segment-1',
+    evenementId: 'event-1',
+    nom: 'VIP',
+    description: 'Participants premium avec accès complet',
+    couleur: '#F59E0B',
+    type: 'role',
+    createdAt: new Date('2024-05-01'),
+    updatedAt: new Date('2024-05-01'),
+  },
+  {
+    id: 'segment-2',
+    evenementId: 'event-1',
+    nom: 'Speakers',
+    description: 'Intervenants et conférenciers',
+    couleur: '#8B5CF6',
+    type: 'role',
+    createdAt: new Date('2024-05-01'),
+    updatedAt: new Date('2024-05-01'),
+  },
+  {
+    id: 'segment-3',
+    evenementId: 'event-1',
+    nom: 'Participants Standard',
+    description: 'Participants avec accès standard',
+    couleur: '#3B82F6',
+    type: 'role',
+    createdAt: new Date('2024-05-01'),
+    updatedAt: new Date('2024-05-01'),
+  },
+  {
+    id: 'segment-4',
+    evenementId: 'event-1',
+    nom: 'International',
+    description: 'Participants internationaux (anglophone)',
+    couleur: '#10B981',
+    type: 'langue',
+    createdAt: new Date('2024-05-01'),
+    updatedAt: new Date('2024-05-01'),
+  },
+];
+
+// ============================================
 // SESSIONS - Séminaire Tech 2024 (event-1)
 // ============================================
 
@@ -165,6 +342,9 @@ export const demoSessions: Session[] = [
   {
     id: 'session-2',
     eventId: 'event-1',
+    programmeId: 'programme-1',
+    journeeId: 'journee-1',
+    trackId: 'track-1',
     title: 'Session plénière d\'ouverture',
     description: 'Discours d\'ouverture et présentation des tendances technologiques 2024',
     type: 'PLENARY',
@@ -173,6 +353,7 @@ export const demoSessions: Session[] = [
     venueRoomId: 'room-1',
     venueRoom: demoVenueRooms[0],
     maxCapacity: 500,
+    currentRegistrations: 243,
     isPublic: true,
     language: 'fr',
     tags: ['keynote', 'tendances', 'IA'],
@@ -198,10 +379,23 @@ export const demoSessions: Session[] = [
         order: 1,
       },
     ],
+    interactions: {
+      qaActive: true,
+      quizActive: false,
+      sondageActive: true,
+      wordcloudActive: false,
+    },
+    logistique: {
+      ressources: ['2 micros', '1 écran géant', 'Projecteur 4K', 'Son surround'],
+      tempsMontage: 60,
+      tempsDemonte: 30,
+      instructions: 'Prévoir traduction simultanée si participants anglophones',
+    },
     status: 'PUBLISHED',
     _count: {
       checkIns: 243,
       feedbacks: 187,
+      questions: 34,
     },
   },
   {
@@ -221,6 +415,9 @@ export const demoSessions: Session[] = [
   {
     id: 'session-4',
     eventId: 'event-1',
+    programmeId: 'programme-1',
+    journeeId: 'journee-1',
+    trackId: 'track-1',
     title: 'Atelier: Intelligence Artificielle Générative',
     description: 'Découverte pratique des outils IA pour l\'entreprise: ChatGPT, Midjourney, GitHub Copilot',
     type: 'WORKSHOP',
@@ -229,7 +426,9 @@ export const demoSessions: Session[] = [
     venueRoomId: 'room-2',
     venueRoom: demoVenueRooms[1],
     maxCapacity: 80,
+    currentRegistrations: 78,
     isPublic: true,
+    inscriptionRequise: true,
     language: 'fr',
     tags: ['IA', 'pratique', 'hands-on', 'ChatGPT'],
     speakers: [
@@ -244,15 +443,31 @@ export const demoSessions: Session[] = [
         order: 0,
       },
     ],
+    interactions: {
+      qaActive: true,
+      quizActive: true,
+      sondageActive: false,
+      wordcloudActive: true,
+    },
+    logistique: {
+      ressources: ['80 laptops', 'WiFi renforcé', 'Écran projecteur', '2 micros'],
+      tempsMontage: 45,
+      tempsDemonte: 30,
+      instructions: 'Chaque participant doit avoir un laptop avec accès Internet',
+    },
     status: 'PUBLISHED',
     _count: {
       checkIns: 78,
       feedbacks: 65,
+      questions: 12,
     },
   },
   {
     id: 'session-5',
     eventId: 'event-1',
+    programmeId: 'programme-1',
+    journeeId: 'journee-1',
+    trackId: 'track-2',
     title: 'Atelier: Cybersécurité & Zero Trust',
     description: 'Stratégies de sécurité modernes pour protéger votre infrastructure',
     type: 'WORKSHOP',
@@ -261,7 +476,9 @@ export const demoSessions: Session[] = [
     venueRoomId: 'room-3',
     venueRoom: demoVenueRooms[2],
     maxCapacity: 80,
+    currentRegistrations: 76,
     isPublic: true,
+    inscriptionRequise: true,
     language: 'fr',
     tags: ['sécurité', 'cyber', 'zero-trust'],
     speakers: [
@@ -276,10 +493,17 @@ export const demoSessions: Session[] = [
         order: 0,
       },
     ],
+    interactions: {
+      qaActive: true,
+      quizActive: false,
+      sondageActive: true,
+      wordcloudActive: false,
+    },
     status: 'PUBLISHED',
     _count: {
       checkIns: 76,
       feedbacks: 58,
+      questions: 8,
     },
   },
   {
@@ -300,6 +524,9 @@ export const demoSessions: Session[] = [
   {
     id: 'session-7',
     eventId: 'event-1',
+    programmeId: 'programme-1',
+    journeeId: 'journee-1',
+    trackId: 'track-2',
     title: 'Cloud Native & Kubernetes',
     description: 'Architecture et best practices pour des applications cloud-native',
     type: 'WORKSHOP',
@@ -308,7 +535,9 @@ export const demoSessions: Session[] = [
     venueRoomId: 'room-2',
     venueRoom: demoVenueRooms[1],
     maxCapacity: 80,
+    currentRegistrations: 74,
     isPublic: true,
+    inscriptionRequise: true,
     language: 'fr',
     tags: ['cloud', 'kubernetes', 'devops'],
     speakers: [
@@ -323,15 +552,25 @@ export const demoSessions: Session[] = [
         order: 0,
       },
     ],
+    interactions: {
+      qaActive: true,
+      quizActive: true,
+      sondageActive: false,
+      wordcloudActive: false,
+    },
     status: 'PUBLISHED',
     _count: {
       checkIns: 74,
       feedbacks: 61,
+      questions: 15,
     },
   },
   {
     id: 'session-8',
     eventId: 'event-1',
+    programmeId: 'programme-1',
+    journeeId: 'journee-1',
+    trackId: 'track-4',
     title: 'Web3 & Blockchain pour l\'entreprise',
     description: 'Cas d\'usage concrets de la blockchain dans le monde professionnel',
     type: 'WORKSHOP',
@@ -340,7 +579,9 @@ export const demoSessions: Session[] = [
     venueRoomId: 'room-3',
     venueRoom: demoVenueRooms[2],
     maxCapacity: 80,
+    currentRegistrations: 68,
     isPublic: true,
+    inscriptionRequise: true,
     language: 'fr',
     tags: ['blockchain', 'web3', 'crypto'],
     speakers: [
@@ -355,10 +596,17 @@ export const demoSessions: Session[] = [
         order: 0,
       },
     ],
+    interactions: {
+      qaActive: true,
+      quizActive: false,
+      sondageActive: true,
+      wordcloudActive: false,
+    },
     status: 'PUBLISHED',
     _count: {
       checkIns: 68,
       feedbacks: 52,
+      questions: 9,
     },
   },
   {
@@ -378,6 +626,9 @@ export const demoSessions: Session[] = [
   {
     id: 'session-10',
     eventId: 'event-1',
+    programmeId: 'programme-1',
+    journeeId: 'journee-1',
+    trackId: 'track-3',
     title: 'Table ronde: L\'avenir du travail hybride',
     description: 'Discussion avec des experts sur l\'évolution du travail post-COVID',
     type: 'PLENARY',
@@ -386,6 +637,7 @@ export const demoSessions: Session[] = [
     venueRoomId: 'room-1',
     venueRoom: demoVenueRooms[0],
     maxCapacity: 500,
+    currentRegistrations: 198,
     isPublic: true,
     language: 'fr',
     tags: ['RH', 'futur du travail', 'hybride'],
@@ -411,10 +663,17 @@ export const demoSessions: Session[] = [
         order: 1,
       },
     ],
+    interactions: {
+      qaActive: true,
+      quizActive: false,
+      sondageActive: true,
+      wordcloudActive: true,
+    },
     status: 'PUBLISHED',
     _count: {
       checkIns: 198,
       feedbacks: 145,
+      questions: 28,
     },
   },
   {
@@ -451,6 +710,9 @@ export const demoSessions: Session[] = [
   {
     id: 'session-13',
     eventId: 'event-1',
+    programmeId: 'programme-1',
+    journeeId: 'journee-2',
+    trackId: 'track-1',
     title: 'Keynote: L\'IA au service de la durabilité',
     description: 'Comment l\'intelligence artificielle peut accélérer la transition écologique',
     type: 'PLENARY',
@@ -459,8 +721,10 @@ export const demoSessions: Session[] = [
     venueRoomId: 'room-1',
     venueRoom: demoVenueRooms[0],
     maxCapacity: 500,
+    currentRegistrations: 231,
     isPublic: true,
     language: 'en',
+    segmentsAutorises: ['segment-1', 'segment-2', 'segment-3', 'segment-4'],
     tags: ['IA', 'sustainability', 'green tech'],
     speakers: [
       {
@@ -474,10 +738,17 @@ export const demoSessions: Session[] = [
         order: 0,
       },
     ],
+    interactions: {
+      qaActive: true,
+      quizActive: false,
+      sondageActive: true,
+      wordcloudActive: false,
+    },
     status: 'PUBLISHED',
     _count: {
       checkIns: 231,
       feedbacks: 176,
+      questions: 21,
     },
   },
   {
@@ -497,6 +768,9 @@ export const demoSessions: Session[] = [
   {
     id: 'session-15',
     eventId: 'event-1',
+    programmeId: 'programme-1',
+    journeeId: 'journee-2',
+    trackId: 'track-3',
     title: 'Atelier: Design Thinking & Innovation',
     description: 'Méthodologie pratique pour innover et résoudre des problèmes complexes',
     type: 'WORKSHOP',
@@ -505,7 +779,9 @@ export const demoSessions: Session[] = [
     venueRoomId: 'room-2',
     venueRoom: demoVenueRooms[1],
     maxCapacity: 80,
+    currentRegistrations: 72,
     isPublic: true,
+    inscriptionRequise: true,
     language: 'fr',
     tags: ['innovation', 'design thinking', 'créativité'],
     speakers: [
@@ -520,15 +796,31 @@ export const demoSessions: Session[] = [
         order: 0,
       },
     ],
+    interactions: {
+      qaActive: false,
+      quizActive: false,
+      sondageActive: true,
+      wordcloudActive: true,
+    },
+    logistique: {
+      ressources: ['Post-its', 'Markers', 'Tableaux blancs', 'Tables rondes'],
+      tempsMontage: 30,
+      tempsDemonte: 20,
+      instructions: 'Configuration en îlots pour favoriser le travail de groupe',
+    },
     status: 'PUBLISHED',
     _count: {
       checkIns: 72,
       feedbacks: 68,
+      questions: 5,
     },
   },
   {
     id: 'session-16',
     eventId: 'event-1',
+    programmeId: 'programme-1',
+    journeeId: 'journee-2',
+    trackId: 'track-5',
     title: 'Atelier: Data Analytics avec Python',
     description: 'Introduction pratique à l\'analyse de données avec pandas et matplotlib',
     type: 'WORKSHOP',
@@ -537,7 +829,9 @@ export const demoSessions: Session[] = [
     venueRoomId: 'room-3',
     venueRoom: demoVenueRooms[2],
     maxCapacity: 80,
+    currentRegistrations: 79,
     isPublic: true,
+    inscriptionRequise: true,
     language: 'fr',
     tags: ['data', 'python', 'analytics'],
     speakers: [
@@ -552,10 +846,23 @@ export const demoSessions: Session[] = [
         order: 0,
       },
     ],
+    interactions: {
+      qaActive: true,
+      quizActive: true,
+      sondageActive: false,
+      wordcloudActive: false,
+    },
+    logistique: {
+      ressources: ['80 laptops avec Python installé', 'WiFi haut débit', 'Écran projecteur'],
+      tempsMontage: 40,
+      tempsDemonte: 25,
+      instructions: 'Vérifier les installations Python avant la session',
+    },
     status: 'PUBLISHED',
     _count: {
       checkIns: 79,
       feedbacks: 71,
+      questions: 18,
     },
   },
   {
