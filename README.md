@@ -4,12 +4,24 @@ Plateforme unique pour la gestion complète d'événements professionnels.
 
 ## 🎯 Fonctionnalités MVP
 
-- **Venue Finder**: Référentiel de lieux et partenaires avec recherche avancée
-- **Agenda Builder**: Création de programmes multi-jours/salles avec drag & drop
-- **Gestion de listes**: Import CSV, segmentation, invitations automatisées
-- **Check-in**: Système QR code pour le contrôle d'accès
-- **Feedback & Surveys**: Évaluation des sessions et enquêtes de satisfaction
-- **Reporting**: Statistiques et exports
+### ✅ Fonctionnalités implémentées
+
+**Backend (API REST complète):**
+- **Authentification**: JWT, login/register, RBAC
+- **Événements**: CRUD complet, statistiques, filtres
+- **Lieux (Venues)**: Référentiel avec recherche multicritères, gestion des salles, score RSE
+- **Sessions**: Programme événements, speakers, détection de conflits
+- **Participants**: CRUD, import CSV, segmentation, check-in QR codes
+- **Feedback**: Évaluations de sessions et surveys
+
+**Frontend (Interfaces web):**
+- **Authentification**: Pages login/register fonctionnelles
+- **Dashboard**: Vue d'ensemble avec navigation et statistiques
+- **Gestion d'événements**: Liste, création, détails, modification
+- **Venue Finder**: Recherche avancée de lieux avec filtres
+- **Check-in**: Interface de scan QR code et validation
+- **Participants**: Interface de gestion (base)
+- **Reporting**: Dashboard statistiques (base)
 
 ## 🏗️ Architecture
 
@@ -31,27 +43,31 @@ packages/
 - **Auth**: NextAuth.js (OAuth + JWT)
 - **Tooling**: Turborepo, pnpm, ESLint, Prettier
 
-## 🚀 Démarrage
+## 🚀 Démarrage rapide
+
+**Voir le guide complet dans [QUICKSTART.md](./QUICKSTART.md)**
 
 ```bash
-# Installation
+# 1. Installer les dépendances
 pnpm install
 
-# Développement
-pnpm dev
-
-# Build
-pnpm build
-
-# Lancer la base de données (Docker)
+# 2. Lancer PostgreSQL et Redis
 docker-compose up -d
 
-# Migrations
-pnpm db:migrate
+# 3. Générer le client Prisma et créer la DB
+cd packages/database
+pnpm db:generate
+pnpm db:push
 
-# Prisma Studio
-pnpm db:studio
+# 4. Démarrer tous les services
+cd ../..
+pnpm dev
 ```
+
+**Applications:**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:3001
+- Swagger docs: http://localhost:3001/api/docs
 
 ## 📦 Commandes utiles
 
