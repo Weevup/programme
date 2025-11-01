@@ -27,7 +27,7 @@ export default function AgendaClient() {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'timeline' | 'list' | 'grid'>('timeline');
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date('2024-06-15')); // Default to first day of demo event
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
 
@@ -39,7 +39,13 @@ export default function AgendaClient() {
     setIsLoading(true);
     try {
       const eventRes = await api.get(`/events/${eventId}`);
-      setEvent(eventRes.data);
+      const eventData = eventRes.data;
+      setEvent(eventData);
+
+      // Set selected date to event start date
+      if (eventData?.startDate) {
+        setSelectedDate(new Date(eventData.startDate));
+      }
 
       const sessionsRes = await api.get(`/events/${eventId}/sessions`);
       setSessions(sessionsRes.data.data || []);
