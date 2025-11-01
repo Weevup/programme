@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { api } from '@/lib/api';
 import TimelineView from '@/components/agenda/TimelineView';
+import SessionFormDialog from '@/components/agenda/SessionFormDialog';
 import type { Session } from '@/types/agenda';
 
 export default function AgendaClient() {
@@ -23,6 +24,8 @@ export default function AgendaClient() {
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'timeline' | 'list' | 'grid'>('timeline');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date('2024-06-15')); // Default to first day of demo event
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedSession, setSelectedSession] = useState<Session | null>(null);
 
   useEffect(() => {
     loadEventData();
@@ -48,6 +51,48 @@ export default function AgendaClient() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSaveSession = async (sessionData: Partial<Session>) => {
+    try {
+      if (selectedSession) {
+        // Update existing session
+        await api.patch(`/sessions/${selectedSession.id}`, sessionData);
+        setSessions((prev) =>
+          prev.map((s) => (s.id === selectedSession.id ? { ...s, ...sessionData } : s))
+        );
+        toast({
+          title: 'Session mise à jour',
+          description: 'La session a été mise à jour avec succès',
+        });
+      } else {
+        // Create new session
+        const response = await api.post(`/events/${eventId}/sessions`, sessionData);
+        setSessions((prev) => [...prev, response.data]);
+        toast({
+          title: 'Session créée',
+          description: 'La nouvelle session a été créée avec succès',
+        });
+      }
+      setSelectedSession(null);
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Erreur',
+        description: 'Impossible de sauvegarder la session',
+      });
+      throw error;
+    }
+  };
+
+  const handleSessionClick = (session: Session) => {
+    setSelectedSession(session);
+    setIsDialogOpen(true);
+  };
+
+  const handleNewSession = () => {
+    setSelectedSession(null);
+    setIsDialogOpen(true);
   };
 
   const getSessionTypeColor = (type: string) => {
@@ -141,7 +186,7 @@ export default function AgendaClient() {
             <Download className="mr-2 h-4 w-4" />
             Exporter
           </Button>
-          <Button size="sm">
+          <Button size="sm" onClick={handleNewSession}>
             <Plus className="mr-2 h-4 w-4" />
             Nouvelle session
           </Button>
@@ -259,12 +304,7 @@ export default function AgendaClient() {
             sessions={sessions}
             rooms={rooms}
             selectedDate={selectedDate}
-            onSessionClick={(session) => {
-              toast({
-                title: session.title,
-                description: `${formatTime(session.startTime)} - ${formatTime(session.endTime)}`,
-              });
-            }}
+            onSessionClick={handleSessionClick}
           />
         </TabsContent>
 
@@ -282,6 +322,7 @@ export default function AgendaClient() {
                     <div
                       key={session.id}
                       className="flex items-start gap-4 p-4 rounded-lg border hover:bg-accent/50 cursor-pointer transition-colors"
+                      onClick={() => handleSessionClick(session)}
                     >
                       <div className="flex flex-col items-center min-w-[80px] pt-1">
                         <span className="text-sm font-semibold">{formatTime(session.startTime)}</span>
@@ -356,6 +397,17 @@ export default function AgendaClient() {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Session Form Dialog */}
+      <SessionFormDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        session={selectedSession}
+        eventId={eventId}
+        rooms={rooms}
+        allSessions={sessions}
+        onSave={handleSaveSession}
+      />
     </div>
   );
 }
