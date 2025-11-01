@@ -2,6 +2,8 @@
 
 Ce document explique où trouver et comment utiliser les exemples d'événements complexes qui démontrent toutes les fonctionnalités de la plateforme.
 
+**✅ Mis à jour** : Les exemples sont maintenant déployés sur GitHub Pages !
+
 ## 🔍 Où trouver les exemples ?
 
 ### Dans le code
