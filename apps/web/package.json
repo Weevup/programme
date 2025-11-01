@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "build:demo": "cp .env.demo .env.local && next build",
+    "build:standalone": "next build",
     "start": "next start",
     "lint": "next lint"
   },

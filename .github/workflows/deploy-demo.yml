@@ -36,16 +36,17 @@ jobs:
         uses: actions/configure-pages@v4
 
       - name: Install dependencies
-        run: |
-          pnpm install
-        continue-on-error: false
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build demo
+        working-directory: apps/web
         run: |
-          cd apps/web
           cp .env.demo .env.local
-          NEXT_PUBLIC_DEMO_MODE=true NEXT_PUBLIC_BASE_PATH=/programme pnpm build
-        continue-on-error: false
+          pnpm build
+        env:
+          NEXT_PUBLIC_DEMO_MODE: "true"
+          NEXT_PUBLIC_BASE_PATH: "/programme"
+          NODE_ENV: "production"
 
       - name: Add .nojekyll
         run: touch apps/web/out/.nojekyll
