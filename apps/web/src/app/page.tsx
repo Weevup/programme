@@ -1,10 +1,17 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
+const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
       <div className="text-center">
+        {isDemoMode && (
+          <div className="mb-8 px-4 py-2 bg-blue-100 text-blue-800 rounded-lg inline-block">
+            🎬 Mode Démo - Données simulées
+          </div>
+        )}
         <h1 className="text-5xl font-bold mb-4">Event Platform MVP</h1>
         <p className="text-xl text-muted-foreground mb-8">
           Plateforme unique pour la gestion complète d'événements professionnels
@@ -17,6 +24,11 @@ export default function Home() {
             <Link href="/register">S'inscrire</Link>
           </Button>
         </div>
+        {isDemoMode && (
+          <p className="mt-4 text-sm text-muted-foreground">
+            Utilisez n'importe quel email/mot de passe pour la démo
+          </p>
+        )}
       </div>
 
       <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl">

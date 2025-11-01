@@ -2,6 +2,20 @@
 
 Plateforme unique pour la gestion complète d'événements professionnels.
 
+## 🌐 Démo en ligne
+
+**[Voir la démo →](https://weevup.github.io/programme/)**
+
+Version démo avec données simulées - aucune installation requise !
+
+- Login/Register : utilisez n'importe quel email/mot de passe
+- 3 événements de démo préchargés
+- 3 lieux avec scores RSE
+- Check-in QR code fonctionnel (code: `QR-DEMO-12345`)
+- Toutes les interfaces disponibles
+
+📖 [Guide de la démo](./DEMO.md)
+
 ## 🎯 Fonctionnalités MVP
 
 ### ✅ Fonctionnalités implémentées
