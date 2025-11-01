@@ -28,6 +28,17 @@ import {
   techConnectContraintes,
 } from './demo-complex-events';
 
+// Import session enrichment data (documents, questions, feedbacks)
+import {
+  demoDocuments,
+  demoQuestions,
+  demoFeedbacks,
+  calculateFeedbackStats,
+  getSessionQuestions,
+  getSessionFeedbacks,
+  getSessionDocuments,
+} from './demo-session-data';
+
 // Export agenda data
 export {
   demoSessions,
@@ -57,6 +68,33 @@ export {
   techConnectSessions,
   techConnectContraintes,
 };
+
+// Export session data
+export {
+  demoDocuments,
+  demoQuestions,
+  demoFeedbacks,
+  calculateFeedbackStats,
+  getSessionQuestions,
+  getSessionFeedbacks,
+  getSessionDocuments,
+};
+
+// Helper function to enrich sessions with documents, questions, and feedbacks
+export function enrichSessionWithData(session: any) {
+  return {
+    ...session,
+    documents: getSessionDocuments(session.id),
+    questions: getSessionQuestions(session.id),
+    feedbacks: getSessionFeedbacks(session.id),
+    feedbackStats: calculateFeedbackStats(session.id),
+    _count: {
+      ...session._count,
+      questions: getSessionQuestions(session.id).length,
+      feedbacks: getSessionFeedbacks(session.id).length,
+    },
+  };
+}
 
 export const demoUser = {
   id: 'demo-user-1',

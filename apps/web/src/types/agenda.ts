@@ -178,6 +178,63 @@ export interface VenueRoom {
   };
 }
 
+export interface SessionDocument {
+  id: string;
+  sessionId: string;
+  nom: string;
+  type: 'pdf' | 'pptx' | 'docx' | 'xlsx' | 'video' | 'link' | 'other';
+  url: string;
+  taille?: number; // bytes
+  description?: string;
+  ordre: number;
+  estPublic: boolean;
+  createdAt?: Date | string;
+}
+
+export interface SessionQuestion {
+  id: string;
+  sessionId: string;
+  participantId: string;
+  participantName?: string;
+  participantPhoto?: string;
+  question: string;
+  likes: number;
+  isAnswered: boolean;
+  reponse?: string;
+  isModerated: boolean; // false if pending moderation
+  createdAt: Date | string;
+  updatedAt?: Date | string;
+}
+
+export interface SessionFeedback {
+  id: string;
+  sessionId: string;
+  participantId: string;
+  rating: number; // 1-5 stars
+  commentaire?: string;
+  aspects?: {
+    contenu?: number; // 1-5
+    orateur?: number; // 1-5
+    organisation?: number; // 1-5
+  };
+  createdAt: Date | string;
+}
+
+export interface PersonalAgendaItem {
+  id: string;
+  participantId: string;
+  sessionId: string;
+  eventId: string;
+  isFavorite: boolean;
+  notes?: string;
+  rappel?: {
+    enabled: boolean;
+    minutesAvant: number; // 15, 30, 60, etc.
+  };
+  createdAt: Date | string;
+  updatedAt?: Date | string;
+}
+
 export interface Session {
   id: string;
   eventId: string;
@@ -204,6 +261,9 @@ export interface Session {
 
   // Speakers
   speakers: Speaker[];
+
+  // Documents
+  documents?: SessionDocument[];
 
   // Visibility & access
   isPublic: boolean;
@@ -247,9 +307,19 @@ export interface Session {
     questions?: number; // Q&A questions
   };
 
+  // Feedback/Rating stats
+  feedbackStats?: {
+    averageRating: number;
+    totalFeedbacks: number;
+    ratingDistribution: Record<number, number>; // {5: 10, 4: 5, 3: 2, 2: 1, 1: 0}
+  };
+
   // Extended for UI
   track?: Track;
   journee?: Journee;
+  questions?: SessionQuestion[];
+  feedbacks?: SessionFeedback[];
+  isInMyAgenda?: boolean; // For current user
 
   createdAt?: Date | string;
   updatedAt?: Date | string;

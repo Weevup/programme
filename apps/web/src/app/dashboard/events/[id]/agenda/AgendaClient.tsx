@@ -14,8 +14,10 @@ import ListView from '@/components/agenda/ListView';
 import GridView from '@/components/agenda/GridView';
 import SessionFormDialog from '@/components/agenda/SessionFormDialog';
 import ConflictsPanel from '@/components/agenda/ConflictsPanel';
+import SessionDetailModal from '@/components/agenda/SessionDetailModal';
 import { detectSessionConflicts } from '@/lib/conflict-detector';
 import { exportToMarkdown, exportToCSV, exportToJSON, downloadFile } from '@/lib/program-export';
+import { enrichSessionWithData } from '@/lib/demo-data';
 import type { Session, Track } from '@/types/agenda';
 
 interface AgendaClientProps {
@@ -46,6 +48,8 @@ export default function AgendaClient({
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [detailSession, setDetailSession] = useState<Session | null>(null);
 
   useEffect(() => {
     // Only load from API if we don't have initial data
@@ -136,9 +140,34 @@ export default function AgendaClient({
     setIsDialogOpen(true);
   };
 
+  const handleSessionDetails = (session: Session) => {
+    // Enrich session with documents, questions, feedbacks
+    const enrichedSession = enrichSessionWithData(session);
+    setDetailSession(enrichedSession);
+    setIsDetailModalOpen(true);
+  };
+
   const handleNewSession = () => {
     setSelectedSession(null);
     setIsDialogOpen(true);
+  };
+
+  const handleAddToAgenda = (sessionId: string) => {
+    // TODO: Add to personal agenda - API call
+    console.log('Add to agenda:', sessionId);
+    toast({
+      title: 'Ajouté à mon agenda',
+      description: 'La session a été ajoutée à votre agenda personnel',
+    });
+  };
+
+  const handleRemoveFromAgenda = (sessionId: string) => {
+    // TODO: Remove from personal agenda - API call
+    console.log('Remove from agenda:', sessionId);
+    toast({
+      title: 'Retiré de mon agenda',
+      description: 'La session a été retirée de votre agenda personnel',
+    });
   };
 
   const getSessionTypeColor = (type: string) => {
@@ -397,7 +426,7 @@ export default function AgendaClient({
             rooms={rooms}
             tracks={tracks}
             selectedDate={selectedDate}
-            onSessionClick={handleSessionClick}
+            onSessionClick={handleSessionDetails}
           />
         </TabsContent>
 
@@ -444,7 +473,7 @@ export default function AgendaClient({
             rooms={rooms}
             tracks={tracks}
             selectedDate={selectedDate}
-            onSessionClick={handleSessionClick}
+            onSessionClick={handleSessionDetails}
           />
         </TabsContent>
 
@@ -491,7 +520,7 @@ export default function AgendaClient({
             rooms={rooms}
             tracks={tracks}
             selectedDate={selectedDate}
-            onSessionClick={handleSessionClick}
+            onSessionClick={handleSessionDetails}
           />
         </TabsContent>
 
@@ -520,6 +549,17 @@ export default function AgendaClient({
         allSessions={sessions}
         onSave={handleSaveSession}
       />
+
+      {/* Session Detail Modal */}
+      {detailSession && (
+        <SessionDetailModal
+          session={detailSession}
+          isOpen={isDetailModalOpen}
+          onClose={() => setIsDetailModalOpen(false)}
+          onAddToAgenda={handleAddToAgenda}
+          onRemoveFromAgenda={handleRemoveFromAgenda}
+        />
+      )}
     </div>
   );
 }
