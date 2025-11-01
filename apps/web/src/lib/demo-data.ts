@@ -1,4 +1,8 @@
 // Mock data for demo mode
+import { demoSessions, demoVenueRooms, demoProgramTemplates } from './demo-agenda-data';
+
+// Export agenda data
+export { demoSessions, demoVenueRooms, demoProgramTemplates };
 
 export const demoUser = {
   id: 'demo-user-1',

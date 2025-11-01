@@ -5,6 +5,9 @@ import {
   demoVenues,
   demoEventStats,
   demoParticipant,
+  demoSessions,
+  demoVenueRooms,
+  demoProgramTemplates,
 } from './demo-data';
 
 const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
@@ -78,6 +81,58 @@ const demoAPI = {
       return { data: demoParticipant };
     }
 
+    // Sessions endpoints
+    if (url.startsWith('/events/') && url.includes('/sessions')) {
+      const eventId = url.split('/')[2];
+      const eventSessions = demoSessions.filter((s) => s.eventId === eventId);
+      return {
+        data: {
+          data: eventSessions,
+          total: eventSessions.length,
+        },
+      };
+    }
+
+    if (url.startsWith('/sessions/')) {
+      const sessionId = url.split('/')[2];
+      const session = demoSessions.find((s) => s.id === sessionId);
+      if (session) {
+        return { data: session };
+      }
+      throw new Error('Session not found');
+    }
+
+    // Rooms endpoints
+    if (url.startsWith('/venues/') && url.includes('/rooms')) {
+      const venueId = url.split('/')[2];
+      const venueRooms = demoVenueRooms.filter((r) => r.venueId === venueId);
+      return {
+        data: {
+          data: venueRooms,
+          total: venueRooms.length,
+        },
+      };
+    }
+
+    if (url === '/rooms') {
+      return {
+        data: {
+          data: demoVenueRooms,
+          total: demoVenueRooms.length,
+        },
+      };
+    }
+
+    // Program templates endpoints
+    if (url === '/program-templates') {
+      return {
+        data: {
+          data: demoProgramTemplates,
+          total: demoProgramTemplates.length,
+        },
+      };
+    }
+
     return { data: null };
   },
 
@@ -136,6 +191,22 @@ const demoAPI = {
       };
       demoVenues.push(newVenue);
       return { data: newVenue };
+    }
+
+    // Sessions
+    if (url.startsWith('/events/') && url.includes('/sessions')) {
+      const newSession = {
+        ...data,
+        id: `session-${Date.now()}`,
+        speakers: data.speakers || [],
+        tags: data.tags || [],
+        isPublic: data.isPublic ?? true,
+        status: 'DRAFT',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      demoSessions.push(newSession);
+      return { data: newSession };
     }
 
     // Check-in

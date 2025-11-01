@@ -185,13 +185,21 @@ export default function EventDetailClient() {
 
         <TabsContent value="sessions">
           <Card>
-            <CardHeader>
-              <CardTitle>Sessions</CardTitle>
-              <CardDescription>Programme de l'événement</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Sessions</CardTitle>
+                <CardDescription>Programme de l'événement</CardDescription>
+              </div>
+              <Button asChild>
+                <Link href={`/dashboard/events/${params.id}/agenda`}>
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Voir l'agenda complet
+                </Link>
+              </Button>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Aucune session pour le moment
+                Consultez l'agenda complet pour gérer les sessions, les salles et les intervenants.
               </p>
             </CardContent>
           </Card>
