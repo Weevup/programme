@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { api } from '@/lib/api';
 import TimelineView from '@/components/agenda/TimelineView';
+import ListView from '@/components/agenda/ListView';
+import GridView from '@/components/agenda/GridView';
 import SessionFormDialog from '@/components/agenda/SessionFormDialog';
 import ConflictsPanel from '@/components/agenda/ConflictsPanel';
 import { detectSessionConflicts } from '@/lib/conflict-detector';
@@ -26,7 +28,7 @@ export default function AgendaClient() {
   const [rooms, setRooms] = useState<any[]>([]);
   const [tracks, setTracks] = useState<Track[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<'timeline' | 'list' | 'grid'>('timeline');
+  const [viewMode, setViewMode] = useState<'timeline' | 'list' | 'grid' | 'conflicts'>('timeline');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
@@ -48,14 +50,27 @@ export default function AgendaClient() {
       }
 
       const sessionsRes = await api.get(`/events/${eventId}/sessions`);
-      setSessions(sessionsRes.data.data || []);
+      const loadedSessions = sessionsRes.data.data || [];
+      setSessions(loadedSessions);
 
       const roomsRes = await api.get('/rooms');
-      setRooms(roomsRes.data.data || []);
+      const allRooms = roomsRes.data.data || [];
+
+      // Filter rooms to only show those that have sessions in this event
+      const roomsWithSessions = allRooms.filter((room: any) =>
+        loadedSessions.some((session: Session) => session.venueRoomId === room.id)
+      );
+      setRooms(roomsWithSessions);
 
       // Load tracks
       const tracksRes = await api.get('/tracks');
-      setTracks(tracksRes.data.data || []);
+      const allTracks = tracksRes.data.data || [];
+
+      // Filter tracks to only show those that have sessions in this event
+      const tracksWithSessions = allTracks.filter((track: Track) =>
+        loadedSessions.some((session: Session) => session.trackId === track.id)
+      );
+      setTracks(tracksWithSessions);
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -301,6 +316,10 @@ export default function AgendaClient() {
               <List className="mr-2 h-4 w-4" />
               Liste
             </TabsTrigger>
+            <TabsTrigger value="grid">
+              <Grid className="mr-2 h-4 w-4" />
+              Grille
+            </TabsTrigger>
             <TabsTrigger value="conflicts">
               <AlertTriangle className="mr-2 h-4 w-4" />
               Conflits
@@ -365,93 +384,98 @@ export default function AgendaClient() {
           />
         </TabsContent>
 
-        {/* List View */}
-        <TabsContent value="list" className="space-y-6">
-          {Object.keys(sessionsByDay).map((day) => (
-            <Card key={day}>
-              <CardHeader>
-                <CardTitle>{formatDate(sessionsByDay[day][0].startTime)}</CardTitle>
-                <CardDescription>{sessionsByDay[day].length} sessions</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {sessionsByDay[day].map((session) => (
-                    <div
-                      key={session.id}
-                      className="flex items-start gap-4 p-4 rounded-lg border hover:bg-accent/50 cursor-pointer transition-colors"
-                      onClick={() => handleSessionClick(session)}
-                    >
-                      <div className="flex flex-col items-center min-w-[80px] pt-1">
-                        <span className="text-sm font-semibold">{formatTime(session.startTime)}</span>
-                        <span className="text-xs text-muted-foreground">{formatTime(session.endTime)}</span>
-                      </div>
+        {/* List View with Date Selector */}
+        <TabsContent value="list" className="space-y-4">
+          <div className="flex items-center justify-between bg-white border rounded-lg p-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const newDate = new Date(selectedDate);
+                newDate.setDate(newDate.getDate() - 1);
+                setSelectedDate(newDate);
+              }}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
 
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h4 className="font-semibold">{session.title}</h4>
-                            {session.description && (
-                              <p className="text-sm text-muted-foreground mt-1">{session.description}</p>
-                            )}
-                          </div>
-                          <Badge className={getSessionTypeColor(session.type)}>
-                            {getSessionTypeLabel(session.type)}
-                          </Badge>
-                        </div>
+            <div className="text-center">
+              <div className="font-semibold">{formatDate(selectedDate)}</div>
+              <div className="text-sm text-muted-foreground">
+                {sessions.filter(s => {
+                  const d = new Date(s.startTime);
+                  return d.toDateString() === selectedDate.toDateString();
+                }).length} sessions
+              </div>
+            </div>
 
-                        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                          {session.venueRoom && (
-                            <div className="flex items-center gap-1">
-                              <MapPin className="h-4 w-4" />
-                              <span>{session.venueRoom.name}</span>
-                            </div>
-                          )}
-                          {session.speakers && session.speakers.length > 0 && (
-                            <div className="flex items-center gap-1">
-                              <Users className="h-4 w-4" />
-                              <span>{session.speakers.map((s) => s.name).join(', ')}</span>
-                            </div>
-                          )}
-                          {session.maxCapacity && (
-                            <div className="flex items-center gap-1">
-                              <Users className="h-4 w-4" />
-                              <span>{session.maxCapacity} places</span>
-                            </div>
-                          )}
-                        </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const newDate = new Date(selectedDate);
+                newDate.setDate(newDate.getDate() + 1);
+                setSelectedDate(newDate);
+              }}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
 
-                        {session.tags && session.tags.length > 0 && (
-                          <div className="flex gap-2">
-                            {session.tags.map((tag) => (
-                              <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          <ListView
+            sessions={sessions}
+            rooms={rooms}
+            tracks={tracks}
+            selectedDate={selectedDate}
+            onSessionClick={handleSessionClick}
+          />
+        </TabsContent>
 
-          {sessions.length === 0 && (
-            <Card>
-              <CardContent className="py-12">
-                <div className="text-center">
-                  <Calendar className="mx-auto h-12 w-12 text-muted-foreground" />
-                  <h3 className="mt-4 text-lg font-semibold">Aucune session</h3>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Commencez par créer votre première session
-                  </p>
-                  <Button className="mt-4">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Créer une session
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+        {/* Grid View with Date Selector */}
+        <TabsContent value="grid" className="space-y-4">
+          <div className="flex items-center justify-between bg-white border rounded-lg p-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const newDate = new Date(selectedDate);
+                newDate.setDate(newDate.getDate() - 1);
+                setSelectedDate(newDate);
+              }}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+
+            <div className="text-center">
+              <div className="font-semibold">{formatDate(selectedDate)}</div>
+              <div className="text-sm text-muted-foreground">
+                {sessions.filter(s => {
+                  const d = new Date(s.startTime);
+                  return d.toDateString() === selectedDate.toDateString();
+                }).length} sessions
+              </div>
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const newDate = new Date(selectedDate);
+                newDate.setDate(newDate.getDate() + 1);
+                setSelectedDate(newDate);
+              }}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <GridView
+            sessions={sessions}
+            rooms={rooms}
+            tracks={tracks}
+            selectedDate={selectedDate}
+            onSessionClick={handleSessionClick}
+          />
         </TabsContent>
 
         {/* Conflicts View */}
