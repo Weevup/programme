@@ -18,24 +18,41 @@ import { detectSessionConflicts } from '@/lib/conflict-detector';
 import { exportToMarkdown, exportToCSV, exportToJSON, downloadFile } from '@/lib/program-export';
 import type { Session, Track } from '@/types/agenda';
 
-export default function AgendaClient() {
+interface AgendaClientProps {
+  initialEvent?: any;
+  initialSessions?: Session[];
+  initialRooms?: any[];
+  initialTracks?: Track[];
+}
+
+export default function AgendaClient({
+  initialEvent,
+  initialSessions = [],
+  initialRooms = [],
+  initialTracks = [],
+}: AgendaClientProps) {
   const params = useParams();
   const { toast } = useToast();
   const eventId = params.id as string;
 
-  const [event, setEvent] = useState<any>(null);
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [rooms, setRooms] = useState<any[]>([]);
-  const [tracks, setTracks] = useState<Track[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [event, setEvent] = useState<any>(initialEvent || null);
+  const [sessions, setSessions] = useState<Session[]>(initialSessions);
+  const [rooms, setRooms] = useState<any[]>(initialRooms);
+  const [tracks, setTracks] = useState<Track[]>(initialTracks);
+  const [isLoading, setIsLoading] = useState(!initialEvent);
   const [viewMode, setViewMode] = useState<'timeline' | 'list' | 'grid' | 'conflicts'>('timeline');
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(
+    initialEvent?.startDate ? new Date(initialEvent.startDate) : new Date()
+  );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    loadEventData();
-  }, [eventId]);
+    // Only load from API if we don't have initial data
+    if (!initialEvent) {
+      loadEventData();
+    }
+  }, [eventId, initialEvent]);
 
   const loadEventData = async () => {
     setIsLoading(true);
