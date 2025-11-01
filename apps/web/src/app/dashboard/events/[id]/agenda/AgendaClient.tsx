@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Calendar, Clock, MapPin, Users, Plus, Download, Upload, Filter, Grid, List, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, Plus, Download, Upload, Filter, Grid, List, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -11,6 +11,9 @@ import { useToast } from '@/components/ui/use-toast';
 import { api } from '@/lib/api';
 import TimelineView from '@/components/agenda/TimelineView';
 import SessionFormDialog from '@/components/agenda/SessionFormDialog';
+import ConflictsPanel from '@/components/agenda/ConflictsPanel';
+import { detectSessionConflicts } from '@/lib/conflict-detector';
+import { exportToMarkdown, exportToCSV, exportToJSON, downloadFile } from '@/lib/program-export';
 import type { Session } from '@/types/agenda';
 
 export default function AgendaClient() {
@@ -137,6 +140,39 @@ export default function AgendaClient() {
     });
   };
 
+  const handleExport = (format: 'markdown' | 'csv' | 'json') => {
+    const eventName = event?.name || 'Programme';
+    let content: string;
+    let filename: string;
+    let mimeType: string;
+
+    switch (format) {
+      case 'markdown':
+        content = exportToMarkdown(sessions, eventName);
+        filename = `${eventName.replace(/\s+/g, '_')}_programme.md`;
+        mimeType = 'text/markdown';
+        break;
+      case 'csv':
+        content = exportToCSV(sessions);
+        filename = `${eventName.replace(/\s+/g, '_')}_programme.csv`;
+        mimeType = 'text/csv';
+        break;
+      case 'json':
+        content = exportToJSON(sessions, eventName);
+        filename = `${eventName.replace(/\s+/g, '_')}_programme.json`;
+        mimeType = 'application/json';
+        break;
+    }
+
+    downloadFile(content, filename, mimeType);
+    toast({
+      title: 'Export réussi',
+      description: `Le programme a été exporté au format ${format.toUpperCase()}`,
+    });
+  };
+
+  const conflicts = detectSessionConflicts(sessions);
+
   const sessionsByDay = sessions.reduce((acc, session) => {
     const day = new Date(session.startTime).toLocaleDateString('fr-FR');
     if (!acc[day]) acc[day] = [];
@@ -182,9 +218,9 @@ export default function AgendaClient() {
             <Upload className="mr-2 h-4 w-4" />
             Importer
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={() => handleExport('csv')}>
             <Download className="mr-2 h-4 w-4" />
-            Exporter
+            Exporter CSV
           </Button>
           <Button size="sm" onClick={handleNewSession}>
             <Plus className="mr-2 h-4 w-4" />
@@ -253,6 +289,15 @@ export default function AgendaClient() {
             <TabsTrigger value="list">
               <List className="mr-2 h-4 w-4" />
               Liste
+            </TabsTrigger>
+            <TabsTrigger value="conflicts">
+              <AlertTriangle className="mr-2 h-4 w-4" />
+              Conflits
+              {conflicts.length > 0 && (
+                <Badge variant="destructive" className="ml-2">
+                  {conflicts.length}
+                </Badge>
+              )}
             </TabsTrigger>
           </TabsList>
 
@@ -395,6 +440,20 @@ export default function AgendaClient() {
               </CardContent>
             </Card>
           )}
+        </TabsContent>
+
+        {/* Conflicts View */}
+        <TabsContent value="conflicts">
+          <ConflictsPanel
+            conflicts={conflicts}
+            sessions={sessions}
+            onResolve={(sessionId) => {
+              const session = sessions.find((s) => s.id === sessionId);
+              if (session) {
+                handleSessionClick(session);
+              }
+            }}
+          />
         </TabsContent>
       </Tabs>
 
