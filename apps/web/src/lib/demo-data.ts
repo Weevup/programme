@@ -9,6 +9,25 @@ import {
   demoSegments,
 } from './demo-agenda-data';
 
+// Import complex event examples
+import {
+  congressProgramme,
+  congressJournees,
+  congressTracks,
+  congressSegments,
+  congressRooms,
+  congressSessions,
+  congressContraintes,
+  congressVersions,
+  congressPublications,
+  techConnectProgramme,
+  techConnectJournees,
+  techConnectTracks,
+  techConnectSegments,
+  techConnectSessions,
+  techConnectContraintes,
+} from './demo-complex-events';
+
 // Export agenda data
 export {
   demoSessions,
@@ -18,6 +37,25 @@ export {
   demoTracks,
   demoJournees,
   demoSegments,
+};
+
+// Export complex events
+export {
+  congressProgramme,
+  congressJournees,
+  congressTracks,
+  congressSegments,
+  congressRooms,
+  congressSessions,
+  congressContraintes,
+  congressVersions,
+  congressPublications,
+  techConnectProgramme,
+  techConnectJournees,
+  techConnectTracks,
+  techConnectSegments,
+  techConnectSessions,
+  techConnectContraintes,
 };
 
 export const demoUser = {
@@ -101,6 +139,56 @@ export const demoEvents = [
     },
     createdAt: new Date('2024-01-10'),
     updatedAt: new Date('2024-05-11'),
+  },
+  // EXEMPLE COMPLEXE 1: Congrès Médical International
+  {
+    id: 'event-congress-2024',
+    name: 'Congrès Mondial de Médecine 2024',
+    description: 'Le plus grand rassemblement de professionnels de santé en Europe - 3 jours, 8 tracks, 120+ sessions',
+    startDate: new Date('2024-10-15T08:00:00'),
+    endDate: new Date('2024-10-17T19:00:00'),
+    status: 'PUBLISHED',
+    languages: ['fr', 'en', 'es', 'de'],
+    timezone: 'Europe/Paris',
+    budgetTotal: 850000,
+    createdById: 'demo-user-1',
+    createdBy: {
+      id: 'demo-user-1',
+      name: 'Démo Weevup',
+      email: 'demo@weevup.com',
+    },
+    _count: {
+      participants: 3200,
+      sessions: 120,
+      venues: 1,
+    },
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-10-01'),
+  },
+  // EXEMPLE COMPLEXE 2: Convention B2B Tech
+  {
+    id: 'event-techconnect-2024',
+    name: 'TechConnect Summit 2024',
+    description: 'La convention B2B de référence pour les décideurs tech - Matchmaking, pitchs, networking',
+    startDate: new Date('2024-11-20T09:00:00'),
+    endDate: new Date('2024-11-22T18:00:00'),
+    status: 'PUBLISHED',
+    languages: ['fr', 'en'],
+    timezone: 'Europe/Paris',
+    budgetTotal: 450000,
+    createdById: 'demo-user-1',
+    createdBy: {
+      id: 'demo-user-1',
+      name: 'Démo Weevup',
+      email: 'demo@weevup.com',
+    },
+    _count: {
+      participants: 1500,
+      sessions: 45,
+      venues: 1,
+    },
+    createdAt: new Date('2024-06-01'),
+    updatedAt: new Date('2024-10-28'),
   },
 ];
 

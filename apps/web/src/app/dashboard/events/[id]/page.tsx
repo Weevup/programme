@@ -6,6 +6,8 @@ export function generateStaticParams() {
     { id: 'event-1' },
     { id: 'event-2' },
     { id: 'event-3' },
+    { id: 'event-congress-2024' },
+    { id: 'event-techconnect-2024' },
   ];
 }
 

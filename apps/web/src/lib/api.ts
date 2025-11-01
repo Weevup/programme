@@ -12,7 +12,32 @@ import {
   demoTracks,
   demoJournees,
   demoSegments,
+  // Complex events
+  congressProgramme,
+  congressJournees,
+  congressTracks,
+  congressSegments,
+  congressRooms,
+  congressSessions,
+  congressContraintes,
+  congressVersions,
+  congressPublications,
+  techConnectProgramme,
+  techConnectJournees,
+  techConnectTracks,
+  techConnectSegments,
+  techConnectSessions,
+  techConnectContraintes,
 } from './demo-data';
+
+// Combine all sessions, rooms, tracks, journees, segments
+const allSessions = [...demoSessions, ...congressSessions, ...techConnectSessions];
+const allRooms = [...demoVenueRooms, ...congressRooms];
+const allTracks = [...demoTracks, ...congressTracks, ...techConnectTracks];
+const allJournees = [...demoJournees, ...congressJournees, ...techConnectJournees];
+const allSegments = [...demoSegments, ...congressSegments, ...techConnectSegments];
+const allProgrammes = [demoProgramme, congressProgramme, techConnectProgramme];
+const allContraintes = [...congressContraintes, ...techConnectContraintes];
 
 const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
@@ -88,7 +113,7 @@ const demoAPI = {
     // Sessions endpoints
     if (url.startsWith('/events/') && url.includes('/sessions')) {
       const eventId = url.split('/')[2];
-      const eventSessions = demoSessions.filter((s) => s.eventId === eventId);
+      const eventSessions = allSessions.filter((s) => s.eventId === eventId);
       return {
         data: {
           data: eventSessions,
@@ -99,7 +124,7 @@ const demoAPI = {
 
     if (url.startsWith('/sessions/')) {
       const sessionId = url.split('/')[2];
-      const session = demoSessions.find((s) => s.id === sessionId);
+      const session = allSessions.find((s) => s.id === sessionId);
       if (session) {
         return { data: session };
       }
@@ -109,7 +134,7 @@ const demoAPI = {
     // Rooms endpoints
     if (url.startsWith('/venues/') && url.includes('/rooms')) {
       const venueId = url.split('/')[2];
-      const venueRooms = demoVenueRooms.filter((r) => r.venueId === venueId);
+      const venueRooms = allRooms.filter((r) => r.venueId === venueId);
       return {
         data: {
           data: venueRooms,
@@ -121,8 +146,8 @@ const demoAPI = {
     if (url === '/rooms') {
       return {
         data: {
-          data: demoVenueRooms,
-          total: demoVenueRooms.length,
+          data: allRooms,
+          total: allRooms.length,
         },
       };
     }
@@ -140,8 +165,9 @@ const demoAPI = {
     // Programme endpoints
     if (url.startsWith('/events/') && url.includes('/programme')) {
       const eventId = url.split('/')[2];
-      if (demoProgramme.evenementId === eventId) {
-        return { data: demoProgramme };
+      const programme = allProgrammes.find((p) => p.evenementId === eventId);
+      if (programme) {
+        return { data: programme };
       }
       return { data: null };
     }
@@ -149,7 +175,7 @@ const demoAPI = {
     // Tracks endpoints
     if (url.startsWith('/programmes/') && url.includes('/tracks')) {
       const programmeId = url.split('/')[2];
-      const tracks = demoTracks.filter((t) => t.programmeId === programmeId);
+      const tracks = allTracks.filter((t) => t.programmeId === programmeId);
       return {
         data: {
           data: tracks,
@@ -161,8 +187,8 @@ const demoAPI = {
     if (url === '/tracks') {
       return {
         data: {
-          data: demoTracks,
-          total: demoTracks.length,
+          data: allTracks,
+          total: allTracks.length,
         },
       };
     }
@@ -170,7 +196,7 @@ const demoAPI = {
     // Journées endpoints
     if (url.startsWith('/programmes/') && url.includes('/journees')) {
       const programmeId = url.split('/')[2];
-      const journees = demoJournees.filter((j) => j.programmeId === programmeId);
+      const journees = allJournees.filter((j) => j.programmeId === programmeId);
       return {
         data: {
           data: journees,
@@ -182,8 +208,8 @@ const demoAPI = {
     if (url === '/journees') {
       return {
         data: {
-          data: demoJournees,
-          total: demoJournees.length,
+          data: allJournees,
+          total: allJournees.length,
         },
       };
     }
@@ -191,7 +217,7 @@ const demoAPI = {
     // Segments endpoints
     if (url.startsWith('/events/') && url.includes('/segments')) {
       const eventId = url.split('/')[2];
-      const segments = demoSegments.filter((s) => s.evenementId === eventId);
+      const segments = allSegments.filter((s) => s.evenementId === eventId);
       return {
         data: {
           data: segments,
@@ -203,8 +229,8 @@ const demoAPI = {
     if (url === '/segments') {
       return {
         data: {
-          data: demoSegments,
-          total: demoSegments.length,
+          data: allSegments,
+          total: allSegments.length,
         },
       };
     }
